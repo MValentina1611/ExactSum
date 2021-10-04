@@ -8,22 +8,25 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-import model.Country;
+
 
 
 
 public class ExactSum {
 
-	private Scanner reader;
+	//private Scanner reader;
 	private List <Integer> info; 
+	private BufferedReader br; 
 	
 	public ExactSum()
 	{
-		reader = new Scanner(System.in);
-		info = new ArrayList<Integer>();	
+		//reader = new Scanner(System.in);
+		info = new ArrayList<Integer>();
+		br = new BufferedReader( new InputStreamReader(System.in));
 	}
 	
 	public static void main(String args[]) throws IOException, ClassNotFoundException
@@ -53,9 +56,8 @@ public class ExactSum {
 			"(0) Exit";
 		
 		System.out.println(menu);
-		menuOp = reader.nextInt();
-		reader.nextLine();
-		
+		menuOp = Integer.parseInt( br.readLine()); 
+			
 		return menuOp;
 
 	}//Method ends
@@ -67,13 +69,14 @@ public class ExactSum {
 
 			case 0:
 				System.out.println ("Bye");
+				br.close();
 				break;
 			case 1:
 				System.out.println("default list of book");
 				break;
 	
 			case 2:
-				System.out.println("list of book entered");
+				askForInfo();
 				break;
 		
 			default:
@@ -92,98 +95,157 @@ public class ExactSum {
 	
 	public void askForInfo() throws IOException
 	{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
 		System.out.println("Type the amount of available books, the price of each one, and how much money do you have");
 				
 		String line = br.readLine();
+		String inputInfo = "";
+		int lineCounter = 0;
+		while( line != null && line.length() > 0)
+		{
+			
+				inputInfo += line+" ";
+				lineCounter++;
+			
+				if(lineCounter == 3)
+				{
+					line += "\n\n"; 
+				}
+				else
+				{
+					line = br.readLine();
+				}
+		}
+		System.out.println(inputInfo);
+		separateInArrays(inputInfo);
 		
-			while(line != null )
-			{	
-				line += "\n";
-				try {
-						int infoToAdd = Integer.parseInt(line);
-						info.add(infoToAdd);
-					}catch(NumberFormatException e){}
-			}
 		
 		
 	}
 	
-	public void searchTheBooks()
+	public void separateInArrays(String inputInfo )
 	{
-		int n = info.get(0);
-		int m = info.get(info.size()-1);
-		int lowLimit,upperLimit,middle;
-		boolean find = false;
-		List <Integer> chosenPrices = new ArrayList<Integer>();
+		String [] separateInfo = inputInfo.split("\n\n");
+		printArray(separateInfo);
+		for( int i = 0; i < separateInfo.length; i++ )
+		{
+			  String [] testCase = separateInfo[i].split(" ");
+			  
+			  int [] booksInfo = new int [testCase.length];
+			  
+			  for(int j = 0; j < testCase.length; j++)
+			  {
+				 try { 
+				  int toAdd = Integer.parseInt(testCase[j]);
+				
+				  booksInfo[j] = toAdd;
+				  
+				 }catch(NumberFormatException e) {}
+			  }
+			  
+			  buildPrices(booksInfo);
+		}
+	}
+	
+	
+	public void buildPrices(int [] booksInfo)
+	{ 
+		int n = 0;
+		int m = 0;
+		try {
+				n = booksInfo[0];
+				m = booksInfo[booksInfo.length-1];
+			}catch(NumberFormatException e) {}
 		
-		if( (n < 2) || (n>10000))
+		
+		int [] prices = new int [booksInfo.length-2];
+		
+		if( (n < 2)  ||(n>10000) )
 		{
 			System.out.println("The number of books available is not enough or too large to process");
 		}
 		else
 		{
-			buildPrices();
-			
-			for(int i = 0; i< buildPrices().length; i++)
+			//buildPrices
+			for( int i = 0; i < prices.length; i++ )
 			{
-				lowLimit = 0;
-				upperLimit = buildPrices().length-1;
+				prices[i] = booksInfo[i+1];
+			}
+			
+			searchBooks(prices, n, m);
+			
+		}
+	}
+	
+	public void searchBooks(int [] prices, int n, int m)
+	{
+		int lowLimit, upperLimit, middle, price1, price2;
+		boolean find = false;
+		List <Integer> chosenPrices = new ArrayList<Integer>();
+		Arrays.sort(prices);
+		for(int i = 0; i < prices.length; i++)
+		{
+			lowLimit = 0;
+			upperLimit = prices.length - 1;
+			
+			while(( lowLimit <= upperLimit )&& (find == false))
+			{
+				middle = (int)((lowLimit + upperLimit)/2); //position
 				
-				while(( lowLimit <= upperLimit )&& (find == false))
+				int booksPrices = prices[i] + prices[middle];
+				
+				if(booksPrices == m)
 				{
-					middle = (int)((lowLimit + upperLimit)/2); //position
-					
-					int booksPrices = buildPrices()[i] + buildPrices()[middle];
-					
-					if(booksPrices == m)
-					{
-						find = true;
-						
-						chosenPrices.add(buildPrices()[i]);
-						chosenPrices.add(buildPrices()[middle]);
-						
-					}
-					else if( booksPrices < m )
-					{
-						upperLimit = m-1;
-					}
-					else
-					{
-						lowLimit = m+1;
-					}
-					
+					find = true;
+					price1 = prices[i];
+					price2 = prices[middle];
+					chosenPrices.add(price1);
+					chosenPrices.add(price2);
 				}
-			}	
-			
-			for(int i = 0; i < chosenPrices.size();i++)
-			{
-				int tempPrices = chosenPrices.get(i)  + chosenPrices.get(i+1);
+				else if( booksPrices < m )
+				{
+					upperLimit = m-1;
+				}
+				else
+				{
+					lowLimit = m+1;
+				}
+			}
+		
+		}
+		chooseBestOption( chosenPrices);	
 				
+	}
+	
+	public void chooseBestOption(List<Integer> chosenPrices)
+	{
+		int min = Math.abs(chosenPrices.get(0)-chosenPrices.get(1));
+		int chosenPrice1 = chosenPrices.get(0);
+		int chosenPrice2 = chosenPrices.get(1);
+		int toCompare = 0;
+		for(int i = 0; i < chosenPrices.size()-1; i++)
+		{
+			toCompare = Math.abs(chosenPrices.get(i)-chosenPrices.get(i+1));
+			
+			if( toCompare < min )
+			{
+				chosenPrice1 = chosenPrices.get(i);
+				chosenPrice2 = chosenPrices.get(i+1);
 			}
 		}
-			
 		
+		System.out.println("Peter should buy books whose prices are " +chosenPrice1 + " and "+ chosenPrice2);
 		
-		
-			
 		
 	}
-	
-	public int[] buildPrices()
+		
+
+	public void printArray(String [] array)
 	{
-		int [] prices = new int [info.size()-2];
-		int j = 1;
-		for(int i = 0; i<prices.length; i++)
+		for(int i =0; i < array.length; i++)
 		{
-			prices[i] = info.get(j);
-			j++;
+			System.out.println(array[i]);
 		}
-		
-		Arrays.sort(prices);
-		return prices;
 	}
-	
-	
 	
 }
