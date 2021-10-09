@@ -98,35 +98,50 @@ public class ExactSum {
 		
 		System.out.println("Type the amount of available books, the price of each one, and how much money do you have");
 				
-		String line = br.readLine();
+		String line =  br.readLine(); 
 		String inputInfo = "";
 		int lineCounter = 0;
 		while( line != null && line.length() > 0)
 		{
 			
-				inputInfo += line+" ";
-				lineCounter++;
+			inputInfo += line+" ";
+	
+			lineCounter++;
 			
-				if(lineCounter == 3)
-				{
-					line += "\n\n"; 
-				}
-				else
-				{
-					line = br.readLine();
-				}
+	
+			if(lineCounter == 3)
+			{
+				
+				inputInfo += "\n\n";
+				
+				
+				
+				lineCounter = 0;
+				
+				
+				
+				line = br.readLine();
+				
+			}
+			
+			if(lineCounter > 0 && lineCounter < 3)
+			{
+				
+				line = br.readLine();
+				
+			}
+				
 		}
-		System.out.println(inputInfo);
+		
 		separateInArrays(inputInfo);
 		
-		
-		
+	
 	}
 	
 	public void separateInArrays(String inputInfo )
 	{
 		String [] separateInfo = inputInfo.split("\n\n");
-		printArray(separateInfo);
+		
 		for( int i = 0; i < separateInfo.length; i++ )
 		{
 			  String [] testCase = separateInfo[i].split(" ");
@@ -144,6 +159,7 @@ public class ExactSum {
 			  }
 			  
 			  buildPrices(booksInfo);
+			  
 		}
 	}
 	
@@ -155,6 +171,7 @@ public class ExactSum {
 		try {
 				n = booksInfo[0];
 				m = booksInfo[booksInfo.length-1];
+				
 			}catch(NumberFormatException e) {}
 		
 		
@@ -183,17 +200,20 @@ public class ExactSum {
 		boolean find = false;
 		List <Integer> chosenPrices = new ArrayList<Integer>();
 		Arrays.sort(prices);
+		
 		for(int i = 0; i < prices.length; i++)
 		{
 			lowLimit = 0;
 			upperLimit = prices.length - 1;
 			
+			
 			while(( lowLimit <= upperLimit )&& (find == false))
 			{
 				middle = (int)((lowLimit + upperLimit)/2); //position
 				
-				int booksPrices = prices[i] + prices[middle];
 				
+				int booksPrices = prices[i] + prices[middle];
+						
 				if(booksPrices == m)
 				{
 					find = true;
@@ -204,11 +224,12 @@ public class ExactSum {
 				}
 				else if( booksPrices < m )
 				{
-					upperLimit = m-1;
+					lowLimit = middle + 1;
 				}
 				else
 				{
-					lowLimit = m+1;
+					upperLimit = middle - 1;
+					
 				}
 			}
 		
@@ -234,7 +255,7 @@ public class ExactSum {
 			}
 		}
 		
-		System.out.println("Peter should buy books whose prices are " +chosenPrice1 + " and "+ chosenPrice2);
+		 System.out.println("Peter should buy books whose prices are " +chosenPrice1 + " and "+ chosenPrice2);
 		
 		
 	}
