@@ -1,32 +1,25 @@
 package ui;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 
-
-
-
+import model.ImportData;
 
 public class ExactSum {
 
-	//private Scanner reader;
-	//private List <Integer> info; 
+
 	private BufferedReader br; 
+	private ImportData testScene;
 	
 	public ExactSum()
 	{
-		//reader = new Scanner(System.in);
-		//info = new ArrayList<Integer>();
 		br = new BufferedReader( new InputStreamReader(System.in));
+		testScene = new ImportData();
 	}
 	
 	public static void main(String args[]) throws IOException, ClassNotFoundException
@@ -71,16 +64,15 @@ public class ExactSum {
 				System.out.println ("Bye");
 				br.close();
 				break;
+				
 			case 1:
-				System.out.println("default list of book");
+				testScene();
 				break;
 	
 			case 2:
 				askForInfo();
 				break;
 		
-			case 3:
-				//useSequentialSearch();
 			default:
 				System.out.println("Error, invalid option");
 				
@@ -89,16 +81,10 @@ public class ExactSum {
 	}//Method ends
 
 	
-	public void testScenario()
-	{
-		
-	}
-	
-	
 	public void askForInfo() throws IOException
 	{
 		
-		System.out.println("Type the amount of available books, the price of each one, and how much money do you have");
+		System.out.println("Type the amount of available books, the price of each one, and how much money do you have: ");
 				
 		String line =  br.readLine(); 
 		String inputInfo = "";
@@ -112,7 +98,7 @@ public class ExactSum {
 			
 			if(lineCounter == 3)
 			{
-				inputInfo += "\n\n";
+				inputInfo += "\n";
 				lineCounter = 0;
 				line = br.readLine();
 			}
@@ -125,14 +111,18 @@ public class ExactSum {
 		}
 		
 		separateInArrays(inputInfo);
-		
-	
 	}
 	
+	//TestScene
+	public void testScene() throws IOException
+	{
+		separateInArrays(testScene.importData());	
+	}
+	
+	//Separate
 	public void separateInArrays(String inputInfo )
 	{
-		String [] separateInfo = inputInfo.split("\n\n");
-		
+		String [] separateInfo = inputInfo.split("\n");
 		for( int i = 0; i < separateInfo.length; i++ )
 		{
 			  String [] testCase = separateInfo[i].split(" ");
@@ -148,9 +138,8 @@ public class ExactSum {
 				  
 				 }catch(NumberFormatException e) {}
 			  }
-			  
 			  buildPrices(booksInfo);
-			  
+			 
 		}
 	}
 	
@@ -180,8 +169,20 @@ public class ExactSum {
 				prices[i] = booksInfo[i+1];
 			}
 			
+			//measureTime
+			Long start, finish, time;
+			
+			start = System.currentTimeMillis(); 
 			searchBooks(prices, n, m);
+			finish = (System.currentTimeMillis());
+			time = finish-start;
+			System.out.println("Finish binarySearch: " + time +"\n");
+			
+			start = System.currentTimeMillis(); 
 			sequentialSearch(prices, n, m);
+			finish = (System.currentTimeMillis());
+			time = finish-start;
+			System.out.println("Finish sequentialSearch: " + time +"\n");
 		}
 	}
 	
@@ -229,7 +230,6 @@ public class ExactSum {
 		}
 			
 		System.out.println("Solving by Binary Search...");
-		printArrayList(chosenPrices);	
 		chooseBestOption( chosenPrices );
 	}
 	
@@ -252,7 +252,7 @@ public class ExactSum {
 			}
 		}
 		
-		 System.out.println("Peter should buy books whose prices are " +chosenPrice1 + " and "+ chosenPrice2+"\n");
+		 System.out.println("Peter should buy books whose prices are " +chosenPrice1 + " and "+ chosenPrice2+".\n");
 		
 		
 	}
@@ -261,6 +261,7 @@ public class ExactSum {
 	public void sequentialSearch( int [] prices, int n, int m )
 	{
 		List <Integer> chosenPrices = new ArrayList<Integer>();
+		printArrayList(chosenPrices);
 		int booksPrices;
 		
 		for(int i = 0; i < prices.length; i++ )
@@ -268,8 +269,6 @@ public class ExactSum {
 			for(int j = i+1; j < prices.length;j++ )
 			{
 				booksPrices = prices[i] + prices[j];
-				
-				
 				
 				if(booksPrices == m)
 				{	
@@ -282,49 +281,9 @@ public class ExactSum {
 		System.out.println("Solving by Sequential Search...");
 		chooseBestOption(chosenPrices);
 	}
-	
-	public void binarySearchFirstPrice(int m, int [] prices)
-	{
-		int lowLimit, upperLimit, middle, booksPrices;
-		List <Integer> chosenPrices = new ArrayList<Integer>();
-		boolean find = false;
-		Arrays.sort(prices);
-	
-		lowLimit = 0;
-		upperLimit = prices.length;
 		
-		for(int i = 0; i < prices.length; i ++)
-		{
-			while( lowLimit <= upperLimit)
-			{
-				middle = (int) ( ( lowLimit + upperLimit ) / 2);
-				booksPrices = prices[i] + prices[middle];
-				
-				if( booksPrices == m)
-				{
-					chosenPrices.add(prices[i]);
-					chosenPrices.add(prices[middle]);
-					lowLimit++;
-				}
-				else if(booksPrices < m)
-				{
-					lowLimit = m+1;
-				}
-				else
-				{
-					upperLimit = m-1;
-				}
-			}
-		}
-	}
-	
-	
-	
-	
-	
-	
 	//print
-	public void printArray(String [] array)
+	public void printArray(int [] array)
 	{
 		for(int i =0; i < array.length; i++)
 		{
@@ -340,4 +299,5 @@ public class ExactSum {
 		}
 	}
 	
+
 }
