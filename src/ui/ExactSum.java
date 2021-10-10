@@ -19,13 +19,13 @@ import java.util.Scanner;
 public class ExactSum {
 
 	//private Scanner reader;
-	private List <Integer> info; 
+	//private List <Integer> info; 
 	private BufferedReader br; 
 	
 	public ExactSum()
 	{
 		//reader = new Scanner(System.in);
-		info = new ArrayList<Integer>();
+		//info = new ArrayList<Integer>();
 		br = new BufferedReader( new InputStreamReader(System.in));
 	}
 	
@@ -79,6 +79,8 @@ public class ExactSum {
 				askForInfo();
 				break;
 		
+			case 3:
+				//useSequentialSearch();
 			default:
 				System.out.println("Error, invalid option");
 				
@@ -101,34 +103,23 @@ public class ExactSum {
 		String line =  br.readLine(); 
 		String inputInfo = "";
 		int lineCounter = 0;
+		
 		while( line != null && line.length() > 0)
 		{
 			
 			inputInfo += line+" ";
-	
 			lineCounter++;
 			
-	
 			if(lineCounter == 3)
 			{
-				
 				inputInfo += "\n\n";
-				
-				
-				
 				lineCounter = 0;
-				
-				
-				
 				line = br.readLine();
-				
 			}
 			
 			if(lineCounter > 0 && lineCounter < 3)
 			{
-				
 				line = br.readLine();
-				
 			}
 				
 		}
@@ -190,10 +181,11 @@ public class ExactSum {
 			}
 			
 			searchBooks(prices, n, m);
-			
+			sequentialSearch(prices, n, m);
 		}
 	}
 	
+	//BinarySearch
 	public void searchBooks(int [] prices, int n, int m)
 	{
 		int lowLimit, upperLimit, middle, price1, price2;
@@ -216,11 +208,12 @@ public class ExactSum {
 						
 				if(booksPrices == m)
 				{
-					find = true;
-					price1 = prices[i];
-					price2 = prices[middle];
-					chosenPrices.add(price1);
-					chosenPrices.add(price2);
+						find = true;
+						price1 = prices[i];
+						price2 = prices[middle];
+						chosenPrices.add(price1);
+						chosenPrices.add(price2);
+			
 				}
 				else if( booksPrices < m )
 				{
@@ -234,8 +227,10 @@ public class ExactSum {
 			}
 		
 		}
-		chooseBestOption( chosenPrices);	
-				
+			
+		System.out.println("Solving by Binary Search...");
+		printArrayList(chosenPrices);	
+		chooseBestOption( chosenPrices );
 	}
 	
 	public void chooseBestOption(List<Integer> chosenPrices)
@@ -244,28 +239,104 @@ public class ExactSum {
 		int chosenPrice1 = chosenPrices.get(0);
 		int chosenPrice2 = chosenPrices.get(1);
 		int toCompare = 0;
+		
 		for(int i = 0; i < chosenPrices.size()-1; i++)
 		{
 			toCompare = Math.abs(chosenPrices.get(i)-chosenPrices.get(i+1));
 			
 			if( toCompare < min )
 			{
+				System.out.println();
 				chosenPrice1 = chosenPrices.get(i);
 				chosenPrice2 = chosenPrices.get(i+1);
 			}
 		}
 		
-		 System.out.println("Peter should buy books whose prices are " +chosenPrice1 + " and "+ chosenPrice2);
+		 System.out.println("Peter should buy books whose prices are " +chosenPrice1 + " and "+ chosenPrice2+"\n");
 		
 		
 	}
 		
+	//SequentialSearch
+	public void sequentialSearch( int [] prices, int n, int m )
+	{
+		List <Integer> chosenPrices = new ArrayList<Integer>();
+		int booksPrices;
+		
+		for(int i = 0; i < prices.length; i++ )
+		{
+			for(int j = i+1; j < prices.length;j++ )
+			{
+				booksPrices = prices[i] + prices[j];
+				
+				
+				
+				if(booksPrices == m)
+				{	
+					chosenPrices.add(prices[i]);
+					chosenPrices.add(prices[j]);
+				}
+			}
 
+		}
+		System.out.println("Solving by Sequential Search...");
+		chooseBestOption(chosenPrices);
+	}
+	
+	public void binarySearchFirstPrice(int m, int [] prices)
+	{
+		int lowLimit, upperLimit, middle, booksPrices;
+		List <Integer> chosenPrices = new ArrayList<Integer>();
+		boolean find = false;
+		Arrays.sort(prices);
+	
+		lowLimit = 0;
+		upperLimit = prices.length;
+		
+		for(int i = 0; i < prices.length; i ++)
+		{
+			while( lowLimit <= upperLimit)
+			{
+				middle = (int) ( ( lowLimit + upperLimit ) / 2);
+				booksPrices = prices[i] + prices[middle];
+				
+				if( booksPrices == m)
+				{
+					chosenPrices.add(prices[i]);
+					chosenPrices.add(prices[middle]);
+					lowLimit++;
+				}
+				else if(booksPrices < m)
+				{
+					lowLimit = m+1;
+				}
+				else
+				{
+					upperLimit = m-1;
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	//print
 	public void printArray(String [] array)
 	{
 		for(int i =0; i < array.length; i++)
 		{
 			System.out.println(array[i]);
+		}
+	}
+	
+	public void printArrayList( List<Integer> chosenPrices)
+	{
+		for(int i = 0; i< chosenPrices.size();i++)
+		{
+			System.out.println(chosenPrices.get(i));
 		}
 	}
 	
